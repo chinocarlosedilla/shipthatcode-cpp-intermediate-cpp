@@ -1,0 +1,5 @@
+push 10 -> size=1 cap=1 live=1
+push 20 -> size=2 cap=2 live=1
+push 30 -> size=3 cap=4 live=1
+[10 20 30] size=3 cap=4
+live=0

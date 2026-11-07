@@ -1,0 +1,5 @@
+open A
+watch A W
+peek W
+drop A
+peek W

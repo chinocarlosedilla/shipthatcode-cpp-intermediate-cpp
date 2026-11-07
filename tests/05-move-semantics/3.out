@@ -1,0 +1,4 @@
+push_copy: copies=1 moves=0
+push_move: copies=0 moves=1 src=0
+a = []
+live=0

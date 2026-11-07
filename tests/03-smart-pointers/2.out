@@ -1,0 +1,4 @@
+open A
+owners A=2
+owners B=1
+close A

@@ -1,0 +1,4 @@
+take: copies=0 moves=1 src=0
+a = []
+b = [1, 2, 3]
+live=0

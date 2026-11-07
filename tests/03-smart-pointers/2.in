@@ -1,0 +1,6 @@
+open A
+share A B
+owners A
+drop A
+owners B
+drop B

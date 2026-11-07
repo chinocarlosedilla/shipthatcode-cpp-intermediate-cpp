@@ -1,0 +1,7 @@
+make a 3 1 2 3
+make b 2 7 8
+assign b a
+set b 0 99
+live
+show a
+show b

@@ -1,0 +1,38 @@
+{
+  "course": "cpp-intermediate",
+  "language": "cpp",
+  "language_id": 1054,
+  "entrypoint": "main.cpp",
+  "version": 1,
+  "content_hash": "52204cf59a3feb09",
+  "lessons": [
+    {
+      "slug": "pointers",
+      "tests_hash": "84d38bbf3741"
+    },
+    {
+      "slug": "dynamic-memory",
+      "tests_hash": "6a245eb00924"
+    },
+    {
+      "slug": "smart-pointers",
+      "tests_hash": "aa065e701444"
+    },
+    {
+      "slug": "rule-of-five",
+      "tests_hash": "8b47d4dab513"
+    },
+    {
+      "slug": "move-semantics",
+      "tests_hash": "be1e4298c7f2"
+    },
+    {
+      "slug": "templates",
+      "tests_hash": "f0195d6c595e"
+    },
+    {
+      "slug": "stl-algorithms",
+      "tests_hash": "df1c802bbdfa"
+    }
+  ]
+}

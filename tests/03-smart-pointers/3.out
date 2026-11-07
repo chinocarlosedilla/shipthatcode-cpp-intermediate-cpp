@@ -1,0 +1,4 @@
+open A
+alive A owners=1
+close A
+expired

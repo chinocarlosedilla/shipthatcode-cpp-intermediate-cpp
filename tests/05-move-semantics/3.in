@@ -1,0 +1,4 @@
+make a 2 4 5
+push_copy a 1
+push_move a
+show a

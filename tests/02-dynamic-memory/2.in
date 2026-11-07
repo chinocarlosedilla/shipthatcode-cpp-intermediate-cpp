@@ -1,0 +1,10 @@
+push 4
+push 8
+push 15
+pop
+print
+shrink
+print
+clear
+push 16
+print
