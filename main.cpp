@@ -67,6 +67,7 @@ void shrink(IntArray& a) {
       }
     }
     delete[] a.data, a.cap;
+    a.data = nullptr;
     if(a.size > 0) {
       a.data = smaller;
     }
