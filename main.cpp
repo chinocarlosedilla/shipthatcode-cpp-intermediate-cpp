@@ -63,7 +63,7 @@ void shrink(IntArray& a) {
     for(int i=0; i<a.size; ++i) {
       smaller[i] = a.data[i];
     }
-    delete[] a.data, a.size;
+    delete[] a.data, a.cap;
     a.data = smaller;
     a.cap = a.size;
   }
