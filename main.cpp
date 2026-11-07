@@ -59,12 +59,17 @@ void push(IntArray& a, int value) {
 void shrink(IntArray& a) {
   // TODO: give back the unused room
   if(a.cap > a.size) {
-    int* smaller = new int[a.size];
-    for(int i=0; i<a.size; ++i) {
-      smaller[i] = a.data[i];
+    int* smaller;
+    if(a.size > 0) {
+      smaller = new int[a.size];
+      for(int i=0; i<a.size; ++i) {
+        smaller[i] = a.data[i];
+      }
     }
     delete[] a.data, a.cap;
-    a.data = smaller;
+    if(a.size > 0) {
+      a.data = smaller;
+    }
     a.cap = a.size;
   }
 }
