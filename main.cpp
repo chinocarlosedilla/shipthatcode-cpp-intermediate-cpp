@@ -43,10 +43,14 @@ int main() {
     } else if (cmd == "watch") {
       // TODO: observer b watches the object behind a, without owning it
       observers[b] = handles[a];
-      handles[b] = observers[b].lock();
     } else if (cmd == "peek") {
       // TODO: report what observer a sees
-      std::cout << "alive " << handles[a]->name() << " owners=" << observers[a].use_count() << std::endl;
+      if(observers[a].lock() == nullptr) {
+        std::cout << "expired" << std::endl;
+      }
+      else {
+        std::cout << "alive " << observers[a].lock()->name() << " owners=" << observers[a].use_count()-1 << std::endl;
+      }
     } else if (cmd == "owners") {
       // TODO: report how many handles own a
       std::cout << "owners " << a << "=" << handles[a].use_count() << std::endl;
