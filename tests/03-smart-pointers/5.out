@@ -1,0 +1,9 @@
+open A
+error A exists
+open B
+error B exists
+error A exists
+owners A=1
+owners B=1
+close A
+close B

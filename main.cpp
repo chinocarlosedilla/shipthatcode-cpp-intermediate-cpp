@@ -33,11 +33,19 @@ int main() {
 
     if (cmd == "open") {
       // TODO: refuse a name that is already open, otherwise build it and take ownership
+      if(handles.count(a)) {
+        std::cout << "error " << a << " exists" << std::endl;
+        continue;
+      }
       handles[a] = build(a);
     } else if (cmd == "share") {
       // TODO: b joins the ownership of a
-      if(handles.count(a) == 0) {
+      if(handles.count(a) == 0 ) {
         std::cout << "error " << a << " missing" << std::endl;
+        continue;
+      }
+      if(handles.count(b)) {
+        std::cout << "error " << b << " exists" << std::endl;
         continue;
       }
       handles[b] = handles[a];
@@ -69,11 +77,21 @@ int main() {
       }
     } else if (cmd == "owners") {
       // TODO: report how many handles own a
-      std::cout << "owners " << a << "=" << handles[a].use_count() << std::endl;
+      int count = handles.count(a) == 0 ? 0 : handles[a].use_count();
+      std::cout << "owners " << a << "=" << count << std::endl;
     }
   }
 
   // TODO: release every remaining handle, in sorted-name order
+  //std::map<std::string, std::shared_ptr<Resource>> handles;
+  //for(std::map<std::string, std::shared_ptr<Resource>>::iterator i = handles.begin();
+  //  i < handles.end(); ++i) {
+  //  i->reset();
+  //}
+  //handles.clear();
+  for(auto &[key, ptr] : handles) {
+    ptr.reset();
+  }
   return 0;
 }
 

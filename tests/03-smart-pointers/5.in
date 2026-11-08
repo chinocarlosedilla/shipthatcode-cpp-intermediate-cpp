@@ -1,0 +1,7 @@
+open A
+open A
+open B
+share A B
+share B A
+owners A
+owners B
