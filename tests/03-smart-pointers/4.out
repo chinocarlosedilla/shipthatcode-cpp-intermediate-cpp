@@ -1,0 +1,8 @@
+error W unknown
+owners Z=0
+open Z
+owners Z=1
+error Q missing
+error Q missing
+error Q missing
+close Z

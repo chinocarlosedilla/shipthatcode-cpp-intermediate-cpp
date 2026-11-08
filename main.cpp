@@ -36,16 +36,32 @@ int main() {
       handles[a] = build(a);
     } else if (cmd == "share") {
       // TODO: b joins the ownership of a
+      if(handles.count(a) == 0) {
+        std::cout << "error " << a << " missing" << std::endl;
+        continue;
+      }
       handles[b] = handles[a];
     } else if (cmd == "drop") {
       // TODO: release the handle named a
+      if(handles.count(a) == 0) {
+        std::cout << "error " << a << " missing" << std::endl;
+        continue;
+      }
       handles.erase(a);
     } else if (cmd == "watch") {
       // TODO: observer b watches the object behind a, without owning it
+      if(handles.count(a) == 0) {
+        std::cout << "error " << a << " missing" << std::endl;
+        continue;
+      }
+      
       observers[b] = handles[a];
     } else if (cmd == "peek") {
       // TODO: report what observer a sees
-      if(observers[a].lock() == nullptr) {
+      if(observers.count(a) == 0) {
+        std::cout << "error " << a << " unknown" << std::endl;
+      }
+      else if(observers[a].lock() == nullptr) {
         std::cout << "expired" << std::endl;
       }
       else {
