@@ -1,97 +1,109 @@
+#include <algorithm>
+#include <cstdlib>
 #include <iostream>
-#include <map>
-#include <memory>
-#include <sstream>
+#include <new>
 #include <string>
 
-class Resource {
-public:
-    explicit Resource(const std::string& name) : name_(name) {
-        std::cout << "open " << name_ << "\n";
-    }
-    ~Resource() { std::cout << "close " << name_ << "\n"; }
-    const std::string& name() const { return name_; }
+// Live-block counter: +1 for every array block new[] hands out, -1 for every
+// block delete[] gives back. A correct program ends with 0.
+static int g_live = 0;
 
-private:
-    std::string name_;
-};
-
-// Hands a fresh, solely-owned Resource to the caller.
-std::unique_ptr<Resource> build(const std::string& name) {
-  return std::make_unique<Resource>(name);
+void* operator new[](std::size_t n) {
+    void* p = std::malloc(n ? n : 1);
+    if (!p) throw std::bad_alloc();
+    ++g_live;
+    return p;
+}
+void operator delete[](void* p) noexcept {
+    if (p) { --g_live; std::free(p); }
+}
+void operator delete[](void* p, std::size_t) noexcept {
+    if (p) { --g_live; std::free(p); }
 }
 
-int main() {
-  std::map<std::string, std::shared_ptr<Resource>> handles;
-  std::map<std::string, std::weak_ptr<Resource>> observers;
+class IntBuffer {
+public:
+  explicit IntBuffer(std::size_t n) : data_(new int[n]()), size_(n) {}
 
-  std::string line;
-  while (std::getline(std::cin, line)) {
-    std::istringstream in(line);
-    std::string cmd, a, b;
-    in >> cmd >> a >> b;   // unused words stay empty
+  int get(std::size_t i) const { return data_[i]; }
+  void set(std::size_t i, int v) { data_[i] = v; }
+  std::size_t size() const { return size_; }
 
-    if (cmd == "open") {
-      // TODO: refuse a name that is already open, otherwise build it and take ownership
-      if(handles.count(a)) {
-        std::cout << "error " << a << " exists" << std::endl;
-        continue;
-      }
-      handles[a] = build(a);
-    } else if (cmd == "share") {
-      // TODO: b joins the ownership of a
-      if(handles.count(a) == 0 ) {
-        std::cout << "error " << a << " missing" << std::endl;
-        continue;
-      }
-      if(handles.count(b)) {
-        std::cout << "error " << b << " exists" << std::endl;
-        continue;
-      }
-      handles[b] = handles[a];
-    } else if (cmd == "drop") {
-      // TODO: release the handle named a
-      if(handles.count(a) == 0) {
-        std::cout << "error " << a << " missing" << std::endl;
-        continue;
-      }
-      handles.erase(a);
-    } else if (cmd == "watch") {
-      // TODO: observer b watches the object behind a, without owning it
-      if(handles.count(a) == 0) {
-        std::cout << "error " << a << " missing" << std::endl;
-        continue;
-      }
-      
-      observers[b] = handles[a];
-    } else if (cmd == "peek") {
-      // TODO: report what observer a sees
-      if(observers.count(a) == 0) {
-        std::cout << "error " << a << " unknown" << std::endl;
-      }
-      else if(observers[a].lock() == nullptr) {
-        std::cout << "expired" << std::endl;
-      }
-      else {
-        std::cout << "alive " << observers[a].lock()->name() << " owners=" << observers[a].use_count()-1 << std::endl;
-      }
-    } else if (cmd == "owners") {
-      // TODO: report how many handles own a
-      int count = handles.count(a) == 0 ? 0 : handles[a].use_count();
-      std::cout << "owners " << a << "=" << count << std::endl;
+  // TODO: destructor
+  ~IntBuffer() {
+    delete[] data_;
+  }
+
+  // TODO: copy constructor (builds a new IntBuffer from an existing one)
+  IntBuffer(const IntBuffer& other)
+    :data_(new int[other.size_]),
+    size_(other.size_) {
+
+    std::copy(other.data_, other.data_ + other.size_, data_);
+  }
+
+  // TODO: copy assignment operator (overwrites an existing IntBuffer)
+  IntBuffer& operator=(const IntBuffer& other) {
+    if(this != &other) {
+      delete[] data_;
+      data_ = new int[other.size_];
+      size_ = other.size_;
+      std::copy(other.data_, other.data_ + other.size_, data_);
     }
+    return *this;
   }
 
-  // TODO: release every remaining handle, in sorted-name order
-  //std::map<std::string, std::shared_ptr<Resource>> handles;
-  //for(std::map<std::string, std::shared_ptr<Resource>>::iterator i = handles.begin();
-  //  i < handles.end(); ++i) {
-  //  i->reset();
-  //}
-  //handles.clear();
-  for(auto &[key, ptr] : handles) {
-    ptr.reset();
-  }
-  return 0;
+private:
+  int* data_;
+  std::size_t size_;
+};
+
+int main() {
+    IntBuffer* slot[3] = {nullptr, nullptr, nullptr};  // slots a, b, c
+    std::string cmd;
+    while (std::cin >> cmd) {
+        if (cmd == "make") {                 // make <slot> <n> <n values>
+            char s;
+            std::size_t n;
+            std::cin >> s >> n;
+            delete slot[s - 'a'];
+            slot[s - 'a'] = new IntBuffer(n);
+            for (std::size_t i = 0; i < n; ++i) {
+                int v;
+                std::cin >> v;
+                slot[s - 'a']->set(i, v);
+            }
+        } else if (cmd == "clone") {         // clone <slot>
+            char s;
+            std::cin >> s;
+            IntBuffer t(*slot[s - 'a']);     // copy-construct a temporary
+            if (t.size() > 0) t.set(0, 100);
+            long long sum = 0;
+            for (std::size_t i = 0; i < t.size(); ++i) sum += t.get(i);
+            std::cout << "clone sum=" << sum << "\n";
+        } else if (cmd == "assign") {        // assign <dest> <src>
+            char d, s;
+            std::cin >> d >> s;
+            *slot[d - 'a'] = *slot[s - 'a'];
+        } else if (cmd == "set") {           // set <slot> <index> <value>
+            char s;
+            std::size_t i;
+            int v;
+            std::cin >> s >> i >> v;
+            slot[s - 'a']->set(i, v);
+        } else if (cmd == "show") {          // show <slot>
+            char s;
+            std::cin >> s;
+            const IntBuffer& b = *slot[s - 'a'];
+            std::cout << s << "[" << b.size() << "]:";
+            for (std::size_t i = 0; i < b.size(); ++i) std::cout << " " << b.get(i);
+            std::cout << "\n";
+        } else if (cmd == "live") {
+            std::cout << "live=" << g_live << "\n";
+        }
+    }
+    for (int k = 0; k < 3; ++k) delete slot[k];
+    std::cout << "live=" << g_live << "\n";
+    return 0;
 }
 
