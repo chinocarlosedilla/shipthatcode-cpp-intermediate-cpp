@@ -1,0 +1,6 @@
+swap: copies=0 moves=3
+p = [1, 2, 3, 4, 5]
+q = [10]
+swap: copies=0 moves=3
+p = [10]
+live=0

@@ -55,10 +55,10 @@ public:
     ++moves;
 
     data_ = other.size_ > 0 ? new int[other.size_] : nullptr;
+    size_ = other.size_;
     for (int i = 0; i < size_; ++i)
       data_[i] = other.data_[i];
 
-    size_ = other.size_;
 
     delete[] other.data_;
     other.data_ = nullptr;
@@ -73,7 +73,8 @@ public:
     delete[] data_;
     size_ = other.size_;
     data_ = size_ > 0 ? new int[size_] : nullptr;
-    for (int i = 0; i < size_; ++i) data_[i] = other.data_[i];
+    for (int i = 0; i < size_; ++i)
+      data_[i] = other.data_[i];
     
     delete[] other.data_;
     other.data_ = nullptr;
