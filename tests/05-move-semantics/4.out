@@ -1,0 +1,9 @@
+take: copies=0 moves=1 src=0
+b = []
+swap: copies=0 moves=3
+a = [6, 6]
+c = []
+push_move: copies=0 moves=1 src=0
+push_move: copies=0 moves=1 src=0
+a = []
+live=0

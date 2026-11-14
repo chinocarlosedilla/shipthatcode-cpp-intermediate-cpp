@@ -1,0 +1,9 @@
+take a b
+show b
+make c 2 6 6
+swap a c
+show a
+show c
+push_move c
+push_move a
+show a

@@ -51,42 +51,33 @@ public:
 
   //IntBuffer(const IntBuffer&) = delete;
   //IntBuffer& operator= (const IntBuffer&) = delete;
-  IntBuffer(IntBuffer&& o) noexcept {
+  IntBuffer(IntBuffer&& other) noexcept {
     ++moves;
 
-    if(this != &o) {
-      if(o.data_) {
-        data_ = new int[o.size_];
-        for (int i = 0; i < o.size_; ++i) 
-          data_[i] = o.data_[i];
-        size_ = o.size_;
-      }
-       if(o.data_) {
-          delete[] o.data_;
-          o.data_ = nullptr;
-          o.size_ = 0;
-        }
-    }
+    data_ = other.size_ > 0 ? new int[other.size_] : nullptr;
+    for (int i = 0; i < size_; ++i)
+      data_[i] = other.data_[i];
+
+    size_ = other.size_;
+
+    delete[] other.data_;
+    other.data_ = nullptr;
+    other.size_ = 0;
   }
 
-  IntBuffer& operator= (IntBuffer&& o) noexcept {
+  IntBuffer& operator= (IntBuffer&& other) noexcept {
     ++moves;
-    if(this != &o) { 
-      if(data_) {
-        delete[] data_;
-        data_ = nullptr;
-        size_ = 0;
-      }
-      if(o.data_) {
-        data_ = new int[o.size_];
-        for (int i = 0; i < o.size_; ++i) 
-          data_[i] = o.data_[i];
-        size_ = o.size_; 
-        delete[] o.data_; 
-        o.data_ = nullptr;
-        o.size_ = 0; 
-      }
-    }
+    if (this == &other) 
+      return *this;
+
+    delete[] data_;
+    size_ = other.size_;
+    data_ = size_ > 0 ? new int[size_] : nullptr;
+    for (int i = 0; i < size_; ++i) data_[i] = other.data_[i];
+    
+    delete[] other.data_;
+    other.data_ = nullptr;
+    other.size_ = 0;
     return *this;
   }
 
